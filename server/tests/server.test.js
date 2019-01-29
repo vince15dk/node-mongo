@@ -71,6 +71,7 @@ describe('Get /todos',()=>{
         .expect(201)
         .expect((res)=>{
             expect(res.body.todos.length).toBe(2)
+            expect(res.body.todos[0].text).toBe('First test todo')
         })
         .end(done);
     })
