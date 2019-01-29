@@ -37,5 +37,7 @@ try{
     console.log('Unable to fetch users', err);
 }
 
+
+
 client.close();
 })
