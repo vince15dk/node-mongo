@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
 const {ObjectID} = require('mongodb');
@@ -78,6 +79,33 @@ app.use(bodyParser.json());
      }
  })
 
+app.patch('/todos/:id', async(req, res)=>{
+    const id = req.params.id;
+    const body = _.pick(req.body,['text','completed']);
+    try{
+        if(!ObjectID.isValid(id)){
+            const error = new Error('Not valid ID');
+            error.statudCode = 404;
+            throw error;
+        }
+        if(_.isBoolean(body.completed) && body.completed){
+            body.completedAt = new Date().getTime();
+        }else{
+            body.completed = false;
+            body.completedAt = null;
+        }
+        const todo = await Todo.findByIdAndUpdate(id,{$set: body},{new: true});
+        if(!todo){
+            const error = new Error('No todo found');
+            error.statusCode = 404;
+            throw error;
+        }
+        res.status(200).send({todo})
+    }catch(err){
+        res.status(404).send({message: err.message, statusCode: err.statusCode});
+    }
+
+})
 
 app.listen(port, ()=>{
     console.log(`Started on port ${port}`);
