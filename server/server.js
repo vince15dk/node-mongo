@@ -72,7 +72,7 @@ app.use(bodyParser.json());
             error.statusCode = 404;
             throw error;
         }
-        res.status(400).send({todo}); 
+        res.status(200).send({todo}); 
      }catch(err){
          res.status(404).send({message: err.message, statusCode: err.statusCode});
      }
