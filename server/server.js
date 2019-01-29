@@ -18,9 +18,9 @@ app.use(bodyParser.json());
     try{
         const doc = await newTodo.save();
         res.status(200).send(doc);
-        console.log(JSON.stringify(doc, undefined, 2));
+        //console.log(JSON.stringify(doc, undefined, 2));
     }catch(err){
-        res.status(401).send('Unable to insert todos.', err)
+        res.status(400).send(err);
       
     }
  })
@@ -28,3 +28,4 @@ app.listen(3001, ()=>{
     console.log('Started on port 3001');
 })
 
+module.exports = {app};
