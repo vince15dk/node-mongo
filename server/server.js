@@ -58,6 +58,27 @@ app.use(bodyParser.json());
      }
  })
 
+ app.delete('/todos/:id', async (req, res)=>{
+     const todoId = req.params.id;
+     try{
+        if(!ObjectID.isValid(todoId)){
+            const error = new Error('Not valid ID');
+            error.statudCode = 404;
+            throw error;
+        }
+        const todo = await Todo.findByIdAndRemove(todoId);
+        if(!todo){
+            const error = new Error('No todo found');
+            error.statusCode = 404;
+            throw error;
+        }
+        res.status(400).send({todo}); 
+     }catch(err){
+         res.status(404).send({message: err.message, statusCode: err.statusCode});
+     }
+ })
+
+
 app.listen(port, ()=>{
     console.log(`Started on port ${port}`);
 })
