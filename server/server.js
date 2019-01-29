@@ -24,6 +24,17 @@ app.use(bodyParser.json());
       
     }
  })
+
+ app.get('/todos', async (req, res)=>{
+    try{
+        const todos = await Todo.find();
+        res.status(200).send({todos});
+    }catch(err){
+        res.status(400).send(err);
+    }
+
+ })
+
 app.listen(3001, ()=>{
     console.log('Started on port 3001');
 })
