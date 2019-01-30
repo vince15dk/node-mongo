@@ -46,7 +46,7 @@ UserSchema.methods.generateAuthToken = function(){
     // reach the this keyword to bind with individual object which calls this method
     const user = this; 
     const access = 'auth';
-    const token = jwt.sign({_id: user._id.toHexString(), access},'sj123').toString();
+    const token = jwt.sign({_id: user._id.toHexString(), access},process.env.JWT_SECRET).toString();
 
     //user.tokens.push({access, token});  Crashing issues with newer version of mongodb
     user.tokens = user.tokens.concat([{access, token}]);
@@ -85,7 +85,7 @@ UserSchema.statics.findByToken = function(token) { //statics is same as methods 
     let decoded;
 
    try{
-    decoded = jwt.verify(token, 'sj123');
+    decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log(decoded);
    }catch(err){
     // return new Promise((resolve, reject)=>{

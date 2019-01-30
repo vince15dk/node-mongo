@@ -11,14 +11,14 @@ email: 'vince15dk@gmail.com',
 password: 'userOnePass',
 tokens: [{
     access: 'auth',
-    token: jwt.sign({_id: userOneId, access: 'auth'}, 'sj123').toString()
+    token: jwt.sign({_id: userOneId, access: 'auth'}, process.env.JWT_SECRET).toString()
 }]},{
     _id: userTwoId,
     email: 'hen@example.com',
     password: 'userTwoPass',
     tokens: [{
         access: 'auth',
-        token: jwt.sign({_id: userTwoId, access: 'auth'}, 'sj123').toString()
+        token: jwt.sign({_id: userTwoId, access: 'auth'}, process.env.JWT_SECRET).toString()
     }]
 }];
 
