@@ -45,7 +45,7 @@ UserSchema.methods.generateAuthToken = function(){
     // reach the this keyword to bind with individual object which calls this method
     const user = this; 
     const access = 'auth';
-    const token = jwt.sign({_id: user._id.toHexString(). access},'sj123').toString();
+    const token = jwt.sign({_id: user._id.toHexString(), access},'sj123').toString();
 
     //user.tokens.push({access, token});  Crashing issues with newer version of mongodb
     user.tokens = user.tokens.concat([{access, token}]);
@@ -62,9 +62,31 @@ UserSchema.methods.generateAuthToken = function(){
     return user.save().then(()=>{ 
         return token;
     })
-
-    
 }
+
+UserSchema.statics.findByToken = function(token) { //statics is same as methods but it turn it into Model method not instance method like methods
+
+    const User = this;
+    let decoded;
+
+   try{
+    decoded = jwt.verify(token, 'sj123');
+    console.log(decoded);
+   }catch(err){
+    // return new Promise((resolve, reject)=>{
+    //     reject();
+    // })
+    return Promise.reject('Unautorized');
+   }
+
+   return User.findOne({ // return this chanining of returning user instance to other scope that calls this statics
+        _id: decoded._id,
+        'tokens.token': token,
+        'tokens.access': 'auth'
+   });
+
+}
+
 
 const User = mongoose.model('Users', UserSchema);
 
