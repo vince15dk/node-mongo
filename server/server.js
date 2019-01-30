@@ -108,6 +108,26 @@ app.patch('/todos/:id', async(req, res)=>{
 
 })
 
+// POST /users 
+    app.post('/users', async(req, res)=>{
+        const body = _.pick(req.body, ['email','password']);
+        // const user = new User({
+        //     email: body.email,
+        //     password: body.password
+        // })
+        const user = new User(body);
+
+        try{
+            await user.save();
+            const token = await user.generateAuthToken();
+            res.header('x-auth',token).send(user) // prefixing x- in header is to create the custom header 
+        }catch(err){
+            res.status(400).send(err);
+        }
+    })
+
+
+
 app.listen(port, ()=>{
     console.log(`Started on port ${port}`);
 })
