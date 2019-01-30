@@ -33,6 +33,7 @@ const UserSchema = new mongoose.Schema({
     ]
 });
 
+
 UserSchema.methods.toJSON = function(){ //this method is to sort what value we need when returning json value from mongoose
     const user = this;
     const userObject = user.toObject();
