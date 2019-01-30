@@ -138,15 +138,39 @@ app.get('/users/me', authenticate, (req, res)=>{
 // POST /users/login {email, password}
 app.post('/users/login', async (req, res)=>{
     const body = _.pick(req.body, ['email','password']);
-    
-    User.findByCredentails(body.email, body.password)
-    .then(user=>{
-        return user.generateAuthToken().then(token=>{
-            res.header('x-auth', token).send(user);
-        })
-    }).catch(err=>{
+    try{
+        const user = await User.findByCredentails(body.email, body.password);
+        const token = await user.generateAuthToken();
+        res.header('x-auth', token).send(user);
+
+    }catch(err){
         res.status(400).send();
-    })
+    }
+
+    // 1. promise inner chaining
+    // User.findByCredentails(body.email, body.password)
+    // .then(user=>{
+    //     return user.generateAuthToken()
+    //     .then(token=>{
+    //         res.header('x-auth', token).send(user);
+    //     })
+    // })
+    // .catch(err=>{
+    //     res.status(400).send();
+    // })
+
+    // 2. promise outer chaining
+    // let authenticatedUser;
+    // User.findByCredentails(body.email, body.password)
+    // .then(user=>{
+    //     authenticatedUser = user
+    //     return user.generateAuthToken();
+    // }).then(token=>{
+    //     res.header('x-auth', token).send(authenticatedUser);
+    // })
+    // .catch(err=>{
+    //     res.status(400).send();
+    // })
 
 })
 
