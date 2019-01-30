@@ -16,10 +16,10 @@ const port = process.env.PORT;
 
 app.use(bodyParser.json());
 
- app.post('/todos',async (req, res)=>{
+ app.post('/todos',authenticate, async (req, res)=>{
     const newTodo = new Todo({
         text: req.body.text,
-        completed: req.body.completed
+        _creator: req.user._id
     });
     try{
         const doc = await newTodo.save();
@@ -31,9 +31,9 @@ app.use(bodyParser.json());
     }
  })
 
- app.get('/todos', async (req, res)=>{
+ app.get('/todos', authenticate, async (req, res)=>{
     try{
-        const todos = await Todo.find();
+        const todos = await Todo.find({_creator: req.user._id});
         res.status(201).send({todos});
     }catch(err){
         res.status(400).send(err);
@@ -41,7 +41,7 @@ app.use(bodyParser.json());
 
  });
 
- app.get('/todos/:todoId', async (req, res)=>{
+ app.get('/todos/:todoId', authenticate, async (req, res)=>{
      try{
         const todoId = req.params.todoId;
 
@@ -50,7 +50,9 @@ app.use(bodyParser.json());
             err.statusCode = 404;
             throw err;
         }
-        const todo = await Todo.findById(todoId);
+        const todo = await Todo.findOne({
+            _id: todoId,
+            _creator: req.user._id});
         if(!todo){
             const err = new Error('No todo found');
             err.statusCode = 404;
@@ -62,7 +64,7 @@ app.use(bodyParser.json());
      }
  })
 
- app.delete('/todos/:id', async (req, res)=>{
+ app.delete('/todos/:id', authenticate, async (req, res)=>{
      const todoId = req.params.id;
      try{
         if(!ObjectID.isValid(todoId)){
@@ -70,7 +72,8 @@ app.use(bodyParser.json());
             error.statudCode = 404;
             throw error;
         }
-        const todo = await Todo.findByIdAndRemove(todoId);
+        const todo = await Todo.findOneAndRemove({_id: todoId,
+        _creator: req.user._id});
         if(!todo){
             const error = new Error('No todo found');
             error.statusCode = 404;
@@ -82,7 +85,7 @@ app.use(bodyParser.json());
      }
  })
 
-app.patch('/todos/:id', async(req, res)=>{
+app.patch('/todos/:id', authenticate, async(req, res)=>{
     const id = req.params.id;
     const body = _.pick(req.body,['text','completed']);
     try{
@@ -97,7 +100,7 @@ app.patch('/todos/:id', async(req, res)=>{
             body.completed = false;
             body.completedAt = null;
         }
-        const todo = await Todo.findByIdAndUpdate(id,{$set: body},{new: true});
+        const todo = await Todo.findOneAndUpdate({_id: id, _creator: req.user._id},{$set: body},{new: true});
         if(!todo){
             const error = new Error('No todo found');
             error.statusCode = 404;
