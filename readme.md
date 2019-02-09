@@ -8,12 +8,11 @@ Request 요청에 따라 각 유저가 자신의 To-do 리스트를 만들어 Js
 
 On request into the end-point, a user can create, update, and delete his/her To-do list and send it as a Json format 
 
-Enjoy!
-
-
 * DB - Mongodb
 * ODM - Mongoose
 * Tool - Postman
+
+Enjoy!
 
 <br/>
 
